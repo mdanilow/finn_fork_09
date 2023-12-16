@@ -125,6 +125,9 @@ class MatrixVectorActivation(HLSCustomOp):
             # vector through the accelerator. This will get rid of any old
             # weight data from the weight FIFOs.
             "runtime_writeable_weights": ("i", False, 0, {0, 1}),
+            # external weights tensor to be set by ExternalizeParams transform
+            # if "mem_mode" == "external"
+            "external_weights": ("t", False, []),
         }
         my_attrs.update(super().get_nodeattr_types())
         return my_attrs
@@ -819,7 +822,12 @@ class MatrixVectorActivation(HLSCustomOp):
             # save hlslib-compatible weights in params.h
             weight_filename = "{}/params.h".format(code_gen_dir)
             self.make_weight_file(weights, "hls_header", weight_filename)
-        elif mem_mode == "decoupled" or mem_mode == "external":
+        elif mem_mode == "external":
+            weights = self.get_nodeattr("external_weights")
+            weight_filename_sim = "{}/weights.npy".format(code_gen_dir)
+            # save decoupled weights for cppsim
+            self.make_weight_file(weights, "decoupled_npy", weight_filename_sim)
+        elif mem_mode == "decoupled":
             weight_filename_sim = "{}/weights.npy".format(code_gen_dir)
             # save decoupled weights for cppsim
             self.make_weight_file(weights, "decoupled_npy", weight_filename_sim)

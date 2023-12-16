@@ -361,6 +361,8 @@ class HLSCustomOp(CustomOp):
         self.set_nodeattr("ip_path", ip_path)
         vlnv = "xilinx.com:hls:%s:1.0" % node.name
         self.set_nodeattr("ip_vlnv", vlnv)
+        if os.path.isdir(ip_path):
+            print("IPGen for %s successful!" % (node.name))
 
     def code_generation_cppsim(self, model):
         """Generates c++ code for simulation (cppsim)."""

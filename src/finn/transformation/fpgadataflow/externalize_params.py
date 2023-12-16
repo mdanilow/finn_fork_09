@@ -29,6 +29,7 @@
 
 from qonnx.transformation.base import Transformation
 from qonnx.util.basic import get_by_name
+from onnx import helper, numpy_helper
 
 
 class ExternalizeParams(Transformation):
@@ -62,6 +63,11 @@ class ExternalizeParams(Transformation):
                 model.graph.input.append(extw_vi)
                 iodma_init = model.get_initializer(extw_vi.name)
                 assert iodma_init is not None
+                # add external_weights attribute to the node to be used during PreapareIP phase
+                target_node = model.find_consumers(extw_tensor_name_out)[0]
+                external_weights = model.get_initializer(target_node.input[1])
+                extw_attr = helper.make_attribute("external_weights", numpy_helper.from_array(external_weights))
+                target_node.attribute.append(extw_attr)
                 # remove output-side initializer to get correct dataflow partitioning
                 model.graph.initializer.remove(
                     [

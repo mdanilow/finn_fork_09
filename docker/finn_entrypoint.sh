@@ -62,6 +62,9 @@ pip install --user -e ${FINN_ROOT}/deps/finn-experimental
 pip install --user -e ${FINN_ROOT}/deps/brevitas
 # pyverilator
 pip install --user -e ${FINN_ROOT}/deps/pyverilator
+echo INSTALLING ATTRS
+# # ATTRS MY LINE
+pip install --user attrs==22.2.0
 
 if [ -f "${FINN_ROOT}/setup.py" ];then
   # run pip install for finn
